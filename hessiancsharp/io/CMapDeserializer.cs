@@ -79,8 +79,8 @@ namespace hessiancsharp.io
 				dictionary = new Dictionary<Object, Object>();
 			else 
 			{
-				//dictionary = (IDictionary)Activator.CreateInstance(m_type);
-                dictionary = new Dictionary<Object, Object>();
+				dictionary = (IDictionary)Activator.CreateInstance(m_type);
+                //dictionary = new Dictionary<Object, Object>();
 				
 			}
 			abstractHessianInput.AddRef(dictionary);
