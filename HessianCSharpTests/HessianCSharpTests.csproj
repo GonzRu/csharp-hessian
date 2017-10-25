@@ -59,10 +59,6 @@
       <Project>{981C2E02-11B4-49DA-A462-48C9AC1FD095}</Project>
       <Name>HessianCSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SilverHessian.csproj">
-      <Project>{A56BE294-6746-4B87-BCDF-9BDC685A8D5C}</Project>
-      <Name>SilverHessian</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
