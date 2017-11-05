@@ -225,7 +225,7 @@ namespace hessiancsharp.io
 			}
 			return intResult;
 		}
-        #if !COMPACT_FRAMEWORK
+
 		/// <summary>
 		/// Reads string from stream and builds Xml - Node
 		/// </summary>
@@ -254,7 +254,6 @@ namespace hessiancsharp.io
 			}
 			return xnodResult;
 		}
-        #endif
 
 		///<summary>
 		/// Reads a character from the underlying stream.
@@ -494,7 +493,6 @@ namespace hessiancsharp.io
 				{
 					throw new CHessianException("remote type is not implemented");
 				}
-#if !COMPACT_FRAMEWORK
 				case PROT_XML_INITIAL:
 				case PROT_XML_FINAL: 
 				{
@@ -502,7 +500,6 @@ namespace hessiancsharp.io
 					m_intChunkLength = (Read() << 8) + Read();
 					return parseXML();
 				}
-#endif
 				case PROT_BINARY_START:
 				case PROT_BINARY_END: 
 				{
