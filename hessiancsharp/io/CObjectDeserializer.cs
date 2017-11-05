@@ -108,21 +108,7 @@ namespace hessiancsharp.io
         /// <returns>Read object or null</returns>
         public override object ReadMap(AbstractHessianInput abstractHessianInput)
         {
-            #if COMPACT_FRAMEWORK
-            object result = Activator.CreateInstance(this.m_type);				
-            #else
-            object result = Activator.CreateInstance(
-                m_type.Assembly.FullName,
-                m_type.FullName,
-                false,
-                BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null,
-                null,
-                null,
-                null,
-                null)
-                .Unwrap();
-            #endif
+            var result = Activator.CreateInstance(m_type);
 
             return ReadMap(abstractHessianInput, result);
         }

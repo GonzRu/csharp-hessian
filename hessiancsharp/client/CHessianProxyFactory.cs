@@ -37,6 +37,7 @@
 using System;
 using hessiancsharp.io;
 using System.Net;
+using Castle.DynamicProxy;
 #endregion
 
 namespace hessiancsharp.client 
@@ -120,15 +121,10 @@ namespace hessiancsharp.client
 		/// <returns>a proxy to the object with the specified interface</returns>
 		private object CreateHessianStandardProxy(string strUrl, Type type)
 		{
-            
+            var proxyGenerator = new ProxyGenerator();
 
-			#if COMPACT_FRAMEWORK
-			// do CF stuff
-			throw new CHessianException("not supported in compact version");		
-			#else
-            return new CHessianProxyStandardImpl(type, this, new Uri(strUrl), m_username, m_password, m_webproxy).GetTransparentProxy();
-			#endif			
-		}
+            return proxyGenerator.CreateInterfaceProxyWithoutTarget(type, new CHessianProxyStandardImpl(type, this, new Uri(strUrl), m_username, m_password, m_webproxy));
+        }
 
 		#endregion
 	}

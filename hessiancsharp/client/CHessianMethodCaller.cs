@@ -41,15 +41,8 @@ using System.Collections;
 using System.IO;
 using System.Net;
 using System.Reflection;
-#if !COMPACT_FRAMEWORK
-using System.Web;
-using System.Web.SessionState;
-using System.IO.Compression;
-#endif
-
 using hessiancsharp.io;
-using System.Text;
-using System.Net.Sockets;
+using System.IO.Compression;
 
 namespace hessiancsharp.client
 {
@@ -199,13 +192,13 @@ namespace hessiancsharp.client
                 req.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
 
             //Preserve cookies to allow for session affinity between remote server and client
-            if (HttpContext.Current != null && HttpContext.Current.Session != null)
-            {
-                if (HttpContext.Current.Session["SessionCookie"] == null)
-                    HttpContext.Current.Session.Add("SessionCookie", new CookieContainer());
-                req.CookieContainer = (CookieContainer)HttpContext.Current.Session["SessionCookie"];
-                AddCustomHeadersToRequest(webRequest, HttpContext.Current.Session);
-            }
+            //if (HttpContext.Current != null && HttpContext.Current.Session != null)
+            //{
+            //    if (HttpContext.Current.Session["SessionCookie"] == null)
+            //        HttpContext.Current.Session.Add("SessionCookie", new CookieContainer());
+            //    req.CookieContainer = (CookieContainer)HttpContext.Current.Session["SessionCookie"];
+            //    AddCustomHeadersToRequest(webRequest, HttpContext.Current.Session);
+            //}
 
             webRequest.Proxy = m_proxy;
             if (contentLength > -1)
@@ -227,16 +220,16 @@ namespace hessiancsharp.client
             return request;
 		}
 
-        protected void AddCustomHeadersToRequest(WebRequest request, HttpSessionState session)
-        {
-            if (session[CUSTOM_HEADER_KEY] != null)
-            {
-                IDictionary headers = session[CUSTOM_HEADER_KEY] as IDictionary;
-                foreach (DictionaryEntry entry in headers)
-                {
-                    request.Headers.Add("X-" + entry.Key, entry.Value.ToString());
-                }
-            }
-        }
+        //protected void AddCustomHeadersToRequest(WebRequest request, HttpSessionState session)
+        //{
+        //    if (session[CUSTOM_HEADER_KEY] != null)
+        //    {
+        //        IDictionary headers = session[CUSTOM_HEADER_KEY] as IDictionary;
+        //        foreach (DictionaryEntry entry in headers)
+        //        {
+        //            request.Headers.Add("X-" + entry.Key, entry.Value.ToString());
+        //        }
+        //    }
+        //}
     }
 }

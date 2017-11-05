@@ -37,19 +37,11 @@
 ******************************************************************************************************
 */
 using System;
-using System.Collections;
 using System.IO;
 using System.Net;
 using System.Reflection;
-#if !COMPACT_FRAMEWORK
-using System.Web;
-using System.Web.SessionState;
-using System.IO.Compression;
-#endif
-
 using hessiancsharp.io;
 using System.Text;
-using System.Net.Sockets;
 
 namespace hessiancsharp.client
 {

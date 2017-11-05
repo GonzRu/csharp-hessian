@@ -35,7 +35,7 @@
 
 #region NAMESPACES
 using System;
-using burlapcsharp.io;
+using Castle.DynamicProxy;
 #endregion
 
 
@@ -108,7 +108,9 @@ namespace burlapcsharp.client
         /// <returns>a proxy to the object with the specified interface</returns>
         private object CreateBurlapStandardProxy(string strUrl, Type type)
         {
-            return new CBurlapProxyStandardImpl(type, this, new Uri(strUrl)).GetTransparentProxy();
+            var proxyGenerator = new ProxyGenerator();
+
+            return proxyGenerator.CreateInterfaceProxyWithoutTarget(type, new CBurlapProxyStandardImpl(type, this, new Uri(strUrl)));
             /*
             if ((m_username == null) && (m_password == null))
             {

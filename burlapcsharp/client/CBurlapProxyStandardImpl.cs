@@ -33,11 +33,9 @@
 ******************************************************************************************************
 */
 #region NAMESPACES
+using Castle.DynamicProxy;
 using System;
 using System.Reflection;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Messaging;
-using System.Runtime.Remoting.Proxies;
 #endregion
 
 namespace burlapcsharp.client
@@ -45,7 +43,7 @@ namespace burlapcsharp.client
     /// <summary>
     /// Proxy that works with .NET - Remote proxy framework
     /// </summary>
-    class CBurlapProxyStandardImpl : RealProxy, IRemotingTypeInfo, IBurlapProxyStandard
+    class CBurlapProxyStandardImpl : IInterceptor, IBurlapProxyStandard
     {
         #region CLASS_FIELDS
 		/// <summary>
@@ -66,7 +64,6 @@ namespace burlapcsharp.client
 		/// <param name="hessianProxyFactory">BurlapProxyFactory - Instance</param>
 		/// <param name="uri">Server-Proxy uri</param>
         public CBurlapProxyStandardImpl(Type proxyType, CBurlapProxyFactory burlapProxyFactory, Uri uri)
-            : base(typeof(IBurlapProxyStandard))
 		{
 			this.m_proxyType = proxyType;
             this.m_methodCaller = new CBurlapMethodCaller(burlapProxyFactory, uri);
@@ -81,27 +78,18 @@ namespace burlapcsharp.client
         */
 		#endregion
 
-        /// <summary>
-        /// This reflective method for invoking methods. Overriden from RealProxy.
-        /// Handles the object invocation. This method wrapps an instance call to the hessian 
-        /// requests, sends it to the burlap service and translates the reply of this call to the C# - data type
-        /// <see cref="System.Runtime.Remoting.Proxies.RealProxy"/>
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <returns></returns>
-        public override IMessage Invoke(IMessage msg)
+        public void Intercept(IInvocation invocation)
         {
-            // Convert to a MethodCallMessage
-            IMethodCallMessage methodMessage = new MethodCallMessageWrapper((IMethodCallMessage)msg);
-            MethodInfo methodInfo = this.GetMethodInfoForMethodBase(methodMessage);
-            Type[] argumentTypes = CBurlapMethodCaller.GetArgTypes(methodMessage.Args);
+            var methodInfo = invocation.Method;
+            var argumentTypes = invocation.GenericArguments;
+
             object objReturnValue = null;
             if (methodInfo != null)
             {
                 if (methodInfo.Name.Equals("Equals") && argumentTypes != null &&
                     argumentTypes.Length == 1 && argumentTypes[0].IsAssignableFrom((typeof(Object))))
                 {
-                    Object value = methodMessage.Args[0];
+                    Object value = argumentTypes[0];
                     if (value == null)
                     {
                         objReturnValue = false;
@@ -134,18 +122,18 @@ namespace burlapcsharp.client
                 }
                 else
                 {
-                    objReturnValue = this.m_methodCaller.DoBurlapMethodCall(methodMessage.Args, methodInfo);
+                    objReturnValue = this.m_methodCaller.DoBurlapMethodCall(argumentTypes, methodInfo);
                 }
             }
             else
             {
-                if (methodMessage.MethodName.Equals("GetType") && (methodMessage.ArgCount == 0))
+                if (methodInfo.Name.Equals("GetType") && (argumentTypes.Length == 0))
                 {
                     objReturnValue = this.m_proxyType;
                 }
             }
-            // Create the return message (ReturnMessage)
-            return new ReturnMessage(objReturnValue, methodMessage.Args, methodMessage.ArgCount, methodMessage.LogicalCallContext, methodMessage);
+
+            invocation.ReturnValue = objReturnValue;
         }
 
         /// <summary>
@@ -170,15 +158,6 @@ namespace burlapcsharp.client
         {
             get { return m_proxyType.Name; }
             set { }
-        }
-        /// <summary>
-        /// Gets method info instance, according to the given method base
-        /// </summary>
-        /// <param name="methodMessage">Method message, that describes the method call</param>
-        /// <returns>MethodInfo - Instance</returns>
-        private MethodInfo GetMethodInfoForMethodBase(IMethodCallMessage methodMessage)
-        {
-            return this.m_proxyType.GetMethod(methodMessage.MethodName, CBurlapMethodCaller.GetArgTypes(methodMessage.Args));
         }
     }
 }
