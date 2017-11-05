@@ -1,4 +1,6 @@
-﻿namespace org.meet4xmas.wire
+﻿using System;
+
+namespace org.meet4xmas.wire
 {
     public interface IServiceAPI
     {
